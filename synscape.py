@@ -20,6 +20,7 @@ Alternatively, inherit from these dataloaders in your own dataloader.
 """
 
 import OpenEXR, Imath, os, sys, json, glob
+from pathlib import Path
 from PIL import Image
 import numpy as np
 from torch.utils.data import Dataset
@@ -81,6 +82,7 @@ class SynscapeDepth(Synscape):
 
 if __name__ == '__main__':
     root = sys.argv[1]
+    os.makedirs(f"{root}/img/depth_numpy", exist_ok=True)
     for path in glob.iglob(f"{root}/img/depth/*.exr"):
         name = Path(path).stem
-        np.save(f"{root}/depth_numpy/{name}.npy", Synscape.load_depth_map(path))
+        np.save(f"{root}/img/depth_numpy/{name}.npy", Synscape.load_depth_map(path))
