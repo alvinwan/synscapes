@@ -27,6 +27,7 @@ class Synscape(Dataset):
         buffer = inp.channel('Z', pt)
         depth = np.frombuffer(buffer, dtype=np.float32)
         depth.shape = (size[1], size[0]) # Numpy arrays are (row, col)
+        depth = depth.copy() # current array is readonly
         depth[depth > 1000] = -1 # use -1 for 'ignore'
         return depth
 
@@ -54,5 +55,5 @@ class SynscapeDepth(Synscape):
 
         image = self.load_image(paths['image'])
         depth = self.load_depth_map(paths['depth'])
-        
+
         return image, depth
