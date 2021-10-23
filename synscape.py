@@ -1,7 +1,27 @@
-import OpenEXR, Imath, os
+"""Synscape dataloading utilities.
+
+You may use this file directly as a conversion script, to convert
+from .exr depth maps to .npy depth maps
+
+    python synscape.py path/to/synscapes/directory/to/convert
+
+Alternatively, inherit from these dataloaders in your own dataloader.
+
+    from synscape import Synscape
+    class MyDataset(Synscape):
+        def __getitem__(self, index):
+            paths = self.paths[index]
+            image = self.load_image(paths['image'])
+            depth = self.load_depth(paths['depth'])
+            label = self.load_depth(paths['class'])
+            instance = self.load_instance(paths['instance'])
+            meta = self.load_meta(paths['meta'])
+
+"""
+
+import OpenEXR, Imath, os, sys, json, glob
 from PIL import Image
 import numpy as np
-import json
 from torch.utils.data import Dataset
 
 
@@ -57,3 +77,10 @@ class SynscapeDepth(Synscape):
         depth = self.load_depth_map(paths['depth'])
 
         return image, depth
+
+
+if __name__ == '__main__':
+    root = sys.argv[1]
+    for path in glob.iglob(f"{root}/img/depth/*.exr"):
+        name = Path(path).stem
+        np.save(f"{root}/depth_numpy/{name}.npy", Synscape.load_depth_map(path))
